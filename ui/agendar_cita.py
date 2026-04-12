@@ -3,73 +3,102 @@ from tkinter import messagebox, ttk
 from tkcalendar import DateEntry
 from conexion import conectar
 
-#paleta de colores
 FONDO = "#E3F2FD"
 AZUL = "#1976D2"
 VERDE = "#4CAF50"
 ROJO = "#E53935"
 
 def pantalla_agendar(contenedor, volver):
-     # Limpiar contenedor
+
+    # LIMPIAR
     for widget in contenedor.winfo_children():
         widget.destroy()
 
+    # -------------------------
+    # FUNCIÓN INTERNA
+    # -------------------------
     def agendar_cita():
-        paciente = entry_paciente.get()
+        nombre = entry_paciente.get()
+        ci = entry_ci.get()
         fecha = entry_fecha.get()
         medico = combo_medico.get()
 
-        if paciente == "" or fecha == "" or medico == "":
+        if nombre == "" or ci == "" or fecha == "" or medico == "":
             messagebox.showerror("Error", "Por favor completa todos los campos")
-        else:
-            messagebox.showinfo("Éxito", f"Cita agendada para {paciente}")
+            return
+
+        try:
+            conexion = conectar()
+            cursor = conexion.cursor()
+
+            cursor.execute("SELECT id FROM pacientes WHERE ci = %s", (ci,))
+            resultado = cursor.fetchone()
+
+            if resultado:
+                paciente_id = resultado[0]
+            else:
+                cursor.execute(
+                    "INSERT INTO pacientes (nombre, ci) VALUES (%s, %s)",
+                    (nombre, ci)
+                )
+                conexion.commit()
+                paciente_id = cursor.lastrowid
+
+            sql = """
+            INSERT INTO citas (paciente_id, medico, fecha, hora, estado)
+            VALUES (%s, %s, %s, %s, %s)
+            """
+
+            valores = (paciente_id, medico, fecha, "10:00:00", "Activa")
+
+            cursor.execute(sql, valores)
+            conexion.commit()
+
+            messagebox.showinfo("Éxito", "¡Cita guardada correctamente!")
+
             entry_paciente.delete(0, tk.END)
-            entry_fecha.delete(0, tk.END)
+            entry_ci.delete(0, tk.END)
             combo_medico.set("")
 
-    # Frame principal (tarjeta centrada)
-    frame = tk.Frame(contenedor, bg="white")
-    frame.place(relx=0.5, rely=0.5, anchor="center", width=420, height=420)
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo guardar:\n{e}")
 
-    # Título
+        finally:
+            cursor.close()
+            conexion.close()
+
+    # -------------------------
+    # INTERFAZ
+    # -------------------------
+    frame = tk.Frame(contenedor, bg="white")
+    frame.pack(expand=True)
+
     tk.Label(frame, text="Agendar Cita",
              bg="white", fg=AZUL,
              font=("Helvetica", 18, "bold")).pack(pady=20)
 
-    # Nombre paciente
     tk.Label(frame, text="Nombre y Apellido", bg="white").pack(anchor="w", padx=40)
-    entry_paciente = tk.Entry(frame, bd=2, relief="flat")
+    entry_paciente = tk.Entry(frame)
     entry_paciente.pack(padx=40, pady=5, fill="x")
-
-# CI
 
     tk.Label(frame, text="CI del paciente", bg="white").pack(anchor="w", padx=40)
     entry_ci = tk.Entry(frame)
     entry_ci.pack(padx=40, pady=5, fill="x")
 
-    # Fecha
-    tk.Label(frame, text="Fecha (dd/mm/aaaa)", bg="white").pack(anchor="w", padx=40)
-    entry_fecha = DateEntry(frame, width=18, background="#1976D2", foreground="white", borderwidth=2, date_pattern="yyyy-mm-dd"
-    )
+    tk.Label(frame, text="Fecha", bg="white").pack(anchor="w", padx=40)
+    entry_fecha = DateEntry(frame, date_pattern="yyyy-mm-dd")
     entry_fecha.pack(padx=40, pady=5, fill="x")
 
-    # Médico
     tk.Label(frame, text="Seleccionar médico", bg="white").pack(anchor="w", padx=40)
     combo_medico = ttk.Combobox(frame, values=[
         "Dr. Pérez", "Dra. Gómez", "Dr. López"
     ])
     combo_medico.pack(padx=40, pady=5, fill="x")
 
-    # Botón agendar
     tk.Button(frame, text="Agendar Cita",
               bg=VERDE, fg="white",
-              font=("Helvetica", 12, "bold"),
-              relief="flat",
-              command=agendar_cita).pack(pady=20, ipadx=10, ipady=5)
+              command=agendar_cita).pack(pady=20)
 
-    # botón volver
     tk.Button(frame, text="← Volver",
               bg=ROJO, fg="white",
-              font=("Helvetica", 10),
-              relief="flat",
               command=volver).pack()
