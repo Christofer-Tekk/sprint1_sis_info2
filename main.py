@@ -1,5 +1,8 @@
 import tkinter as tk
 from ui.registrar_paciente import pantalla_registrar
+from ui.agendar_cita import pantalla_agendar
+from tkcalendar import DateEntry
+
 
 # -------------------------
 # VENTANA PRINCIPAL
@@ -69,7 +72,8 @@ def menu_paciente():
 
     tk.Button(contenedor, text="Agendar Cita",
               bg="#4CAF50", fg="white",
-              width=25, height=2).pack(pady=5)
+              width=25, height=2,
+              command=lambda: pantalla_agendar(contenedor, menu_paciente)).pack(pady=5)
 
     tk.Button(contenedor, text="Consultar Citas",
               bg="#4CAF50", fg="white",
