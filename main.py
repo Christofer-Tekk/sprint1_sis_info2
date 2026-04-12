@@ -1,6 +1,6 @@
 import tkinter as tk
 from ui.registrar_paciente import pantalla_registrar
-
+from ui.cancelar_cita import ventana_cancelar
 # -------------------------
 # VENTANA PRINCIPAL
 # -------------------------
@@ -77,7 +77,9 @@ def menu_paciente():
 
     tk.Button(contenedor, text="Cancelar Cita",
               bg="#E53935", fg="white",
-              width=25, height=2).pack(pady=5)
+              width=25, height=2,
+              command=lambda: ventana_cancelar(contenedor, menu_paciente)
+    ).pack(pady=5)
 
     tk.Button(contenedor, text="← Volver",
               command=menu_principal).pack(pady=20)
@@ -90,3 +92,4 @@ contenedor.pack(fill="both", expand=True)
 
 menu_principal()
 ventana.mainloop()
+# prueba
