@@ -111,7 +111,7 @@ def pantalla_actualizar(contenedor, volver):
             conn.close()
 
             # TASK 5 — Confirmación
-            messagebox.showinfo("✅ Éxito",
+            messagebox.showinfo("Éxito",
                                 "Datos actualizados correctamente.")
             frame_edicion.pack_forget()
             entry_ci.delete(0, tk.END)
@@ -127,7 +127,7 @@ def pantalla_actualizar(contenedor, volver):
               command=buscar_paciente).pack(pady=8)
 
     # ── Botón Guardar (dentro del frame) ─────────────────────
-    tk.Button(frame_edicion, text="💾 Guardar Cambios",
+    tk.Button(frame_edicion, text="Guardar Cambios",
               bg="#4CAF50", fg="white",
               font=("Arial", 11, "bold"),
               width=20, height=2,
