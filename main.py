@@ -3,12 +3,8 @@ from ui.registrar_paciente import pantalla_registrar
 from ui.agendar_cita import pantalla_agendar
 from tkcalendar import DateEntry
 from ui.cancelar_cita import ventana_cancelar
-<<<<<<< HEAD
+from ui.actualizar_paciente import pantalla_actualizar
 import ui.consultar_citas as cc
-=======
-
-
->>>>>>> 28e4d33655be61506c44cc0143df523f64b59b52
 # -------------------------
 # VENTANA PRINCIPAL
 # -------------------------
@@ -62,8 +58,17 @@ def menu_recepcionista():
               command=lambda: pantalla_registrar(contenedor, menu_recepcionista)
     ).pack(pady=10)
 
+    tk.Button(contenedor, text="Actualizar Paciente",
+          bg="#1976D2", fg="white",
+          width=25, height=2,
+          command=lambda: pantalla_actualizar(
+              contenedor, menu_recepcionista)
+    ).pack(pady=10)
+    
     tk.Button(contenedor, text="← Volver",
               command=menu_principal).pack(pady=20)
+    
+    
 
 # -------------------------
 # PACIENTE
