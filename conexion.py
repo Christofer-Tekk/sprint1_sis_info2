@@ -1,10 +1,7 @@
-import mysql.connector
+# CAMBIA SOLO ESTO 👇
+USAR_NUBE = False   # True = nube | False = local
 
-def conectar():
-    return mysql.connector.connect(
-        host="sql10.freesqldatabase.com",
-        user="sql10822747",
-        password="eVJ7UCX6ZV",
-        database="sql10822747",
-        port=3306
-    )
+if USAR_NUBE:
+    from conexion_nube import conectar
+else:
+    from conexion_local import conectar
